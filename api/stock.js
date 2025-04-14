@@ -1,10 +1,13 @@
 export default async function handler(req, res) {
+    // Configurar headers CORS para TODOS os pedidos
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   
+    // Lidar com o preflight CORS
     if (req.method === "OPTIONS") {
-      return res.status(200).end();
+      res.status(200).end();
+      return;
     }
   
     if (req.method !== "POST") {
@@ -35,11 +38,13 @@ export default async function handler(req, res) {
                 }
               }
             }
-          `
-        })
+          `,
+        }),
       });
   
       const json = await response.json();
+      console.log("Resposta da Shopify:", JSON.stringify(json));
+  
       const available = json?.data?.productByHandle?.variants?.nodes?.[0]?.availableForSale;
   
       res.status(200).json({ available });
@@ -48,10 +53,4 @@ export default async function handler(req, res) {
       res.status(500).json({ error: "Erro interno ao consultar o stock" });
     }
   }
-  const json = await response.json();
-
-console.log("Resposta completa da Shopify:", JSON.stringify(json, null, 2)); // <--- aqui
-
-const available = json?.data?.productByHandle?.variants?.nodes?.[0]?.availableForSale;
-
-res.status(200).json({ available });
+  
