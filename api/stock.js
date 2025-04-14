@@ -41,10 +41,10 @@ export default async function handler(req, res) {
           `,
         }),
       });
-  
       const json = await response.json();
-      console.log("Resposta da Shopify:", JSON.stringify(json));
-  
+      console.log("Resposta da Shopify:", JSON.stringify(json, null, 2)); // melhor formatação
+      console.log("Token que chegou à função:", process.env.SHOPIFY_STOREFRONT_TOKEN);
+     
       const available = json?.data?.productByHandle?.variants?.nodes?.[0]?.availableForSale;
   
       res.status(200).json({ available });
