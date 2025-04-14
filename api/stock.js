@@ -1,10 +1,8 @@
 export default async function handler(req, res) {
-    // 🔓 Liberta o CORS
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   
-    // 🛑 Se for uma preflight request, termina aqui
     if (req.method === "OPTIONS") {
       return res.status(200).end();
     }
@@ -24,7 +22,7 @@ export default async function handler(req, res) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Shopify-Storefront-Access-Token": "2e2424889a03df5eb3aba0fdbe02b937"
+          "X-Shopify-Storefront-Access-Token": process.env.SHOPIFY_STOREFRONT_TOKEN,
         },
         body: JSON.stringify({
           query: `
@@ -32,7 +30,7 @@ export default async function handler(req, res) {
               productByHandle(handle: "${handle}") {
                 variants(first: 1) {
                   nodes {
-                    inventoryQuantity
+                    availableForSale
                   }
                 }
               }
@@ -42,12 +40,18 @@ export default async function handler(req, res) {
       });
   
       const json = await response.json();
-      const stock = json?.data?.productByHandle?.variants?.nodes?.[0]?.inventoryQuantity;
+      const available = json?.data?.productByHandle?.variants?.nodes?.[0]?.availableForSale;
   
-      res.status(200).json({ stock });
+      res.status(200).json({ available });
     } catch (error) {
       console.error("Erro:", error);
       res.status(500).json({ error: "Erro interno ao consultar o stock" });
     }
   }
-  
+  const json = await response.json();
+
+console.log("Resposta completa da Shopify:", JSON.stringify(json, null, 2)); // <--- aqui
+
+const available = json?.data?.productByHandle?.variants?.nodes?.[0]?.availableForSale;
+
+res.status(200).json({ available });
