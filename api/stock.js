@@ -24,7 +24,7 @@ export default async function handler(req, res) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Shopify-Storefront-Access-Token": "59239ed451d3b995657191e32428530d"
+          "X-Shopify-Storefront-Access-Token": "2e2424889a03df5eb3aba0fdbe02b937"
         },
         body: JSON.stringify({
           query: `
